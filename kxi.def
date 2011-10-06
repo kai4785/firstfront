@@ -1,0 +1,149 @@
+[Meta-Language]
+/* White space is in just a delimiter */
+::=     is defined as
+|       alternative definition (regexp | )
+[ ]     optional (regexp ?)
+{ }     zero or more occurrences (regexp *)
+( )     grouping (regexp ))
+x       non-terminal symbol x
+"x"     terminal symbol x
+"\""    terminal symbol "
+;       end of rule
+/*      start of comment
+ */     end of comment
+
+
+[Comment]
+Comment ::= "//" comment until the end of the line
+
+[Names, Types and Literals]
+keyword ::= "atoi" | "bool" | "class" | "char" | "cin" | "cout" | "else" | "false" 
+  | "if" | "int" | "itoa" | "main" | "new" | "null" | "object" | "public" | "private" 
+  | "return" | "string" | "this" | "true" | "void" | "while" ;
+modifier::= "public" | "private" ;
+
+/* Lead with Alphabetic character, maximum of 80 characters in length */
+identifier::= "[A-Za-z][A-Za-z_0-9]{0,79}"
+
+class_name::= identifier ;
+
+type ::=  "int" | "char" | "bool" | "void" | class_name ;
+
+
+character_literal::= "\'" character "\'" ;
+
+
+numeric_literal::= ["+" | "-"] number ;
+
+number::= "0"{number} | "1"{number} | "2"{number} | "3"{number}
+ | "4"{number} | "5"{number} | "6"{number} | "7"{number}
+ | "8"{number} | "9"{number}
+;
+
+character::=
+printable_ascii
+ | nonprintable_ascii
+;
+
+printable_ascii::=
+These are the ASCII values between decimal 32 (SPACE) to 126 (~).
+
+
+nonprintable_ascii::=
+Nonprintable ASCII values are between decimal 0 (null) to 31 (unit separator) as well as 127 (DEL). They can be formed by combining a ‘\’ with a printable ASCII character ‘\n’, ‘r’,’\t’ and for example.
+
+[Start Symbol]
+compiliation_unit::=
+{class_declaration}
+"void" "main" "(" ")" method_body
+;
+
+[Declarations]
+class_declaration::=
+"class" class_name "{"
+{class_member_declaration} "}"
+;
+
+class_member_declaration::=
+modifier type identifier field_declaration
+ | constructor_declaration
+;
+
+field_declaration::=
+["[" "]"] ["=" assignment_expression ] ";"
+ | "(" [parameter_list] ")" method_body
+;
+
+constructor_declaration::=
+class_name "(" [parameter_list] ")" method_body ;
+
+method_body::=
+"{" {variable_declaration} {statement} "}" ;
+
+variable_declaration::=
+type identifier ["[" "]"] ["=" assignment_expression ] ";" ;
+
+parameter_list::= parameter { "," parameter } ;
+
+parameter::= type identifier ["[" "]"] ;
+
+
+[Statement]
+statement::=
+"{" {statement} "}"
+ | expression ";"
+ | "if" "(" expression ")" statement [ "else" statement ]
+ | "while" "(" expression ")" statement
+ | "return" [ expression ] ";"
+ | "cout" "<<" expression ";"
+ | "cin" ">>" expression ";"
+;
+[Expression]
+expression::=
+"(" expression ")" [ expressionz ]
+ | "true" [ expressionz ]
+ | "false" [ expressionz ]
+ | "null" [ expressionz ]
+ | numeric_literal [ expressionz ]
+ | character_literal [ expressionz ]
+ | identifier [ fn_arr_member ] [ member_refz ] [ expressionz ]
+;
+
+/* function or array member element */
+fn_arr_member::= "(" [ argument_list ] ")" | "[" expression "]"
+;
+
+argument_list::= expression { "," expression } ;
+
+/* reference a class member, can be a variable, function, or array */
+member_refz::= "." identifier [ fn_arr_member ] [ member_refz ] ;
+
+expressionz::=
+"=" assignment_expression
+ | "&&" expression        /* logical connective expression */
+ | " |  | " expression        /* logical connective expression */
+ | "==" expression        /* boolean expression */
+ | "!=" expression        /* boolean expression */
+ | "<=" expression        /* boolean expression */
+ | ">=" expression        /* boolean expression */
+ | "<" expression        /* boolean expression */
+ | ">" expression        /* boolean expression */
+ | "+" expression        /* mathematical expression */
+ | "-" expression        /* mathematical expression */
+ | "*" expression        /* mathematical expression */
+ | "/" expression        /* mathematical expression */
+;
+
+/* assign either an expression, new class object or new array object */
+assignment_expression::=
+expression
+ | "this"
+ | "new" type new_declaration
+ | "atoi" "(" expression ")"
+ | "itoa" "(" expression ")"
+;
+
+new_declaration::=
+"(" [ argument_list ] ")"
+ | "[" expression "]"
+;
