@@ -1,0 +1,9 @@
+kgrlex
+
+The capstone course for the CS-CS degree at UVU required a course where we implemented a made-up instruction set in a VM, and write an assembler to convert a made-up ASCII assembly language to the byte-code instructions for the VM. The capstone course was a Compiler for a made-up language that targeted the same instruction set for that same VM.
+
+When I first recieved the grammar for the language, I thought it just looked like a bunch of regular expressions. So I setup a prioritized list of Regexps in a static associative array and looped through them for my Tokenizer. When I was writing the lexer, I was doing a lot of copy-and-pasting. I was going back and forth between the grammar and the lexer to make sure I was flowing the correct way. When I tried to turn in my project the first time, the final code exposed a flaw in my Lexer that was due to a misinterpretation on my part of the grammar. It was failing to do the first pass correctly for classes. It was tedious to go through and fix the mistake, but at least it was fixable with a few minor tweaks. I didn't have to rewrite almost anything, just fix my conditions on what and when a class definition ocurred. 
+
+By the end, I was convinced that I could write a program that could generate my static associative array from a grammar definition in some easy to consume format, like an INI file. I was also convinced that I could at least stub-out the functions for the lexer and do the first pass completely, leaving hooks for the second pass to be implemented by hand, all from the grammar.
+
+So that's what I've set out to do. We'll see how it goes.
