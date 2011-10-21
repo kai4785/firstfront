@@ -1,0 +1,2 @@
+Target Grammar is defined in a definition file. We want to read in the target grammar, and generate code that will be able to perform a quality Lexical Analysis on code written for that grammar.
+The tokenizer uses a Grammar class to determine how to tokenize a file. It seems likely that the tokenizer class will be stand-alone, and we can just copy it to the destination source directory.
