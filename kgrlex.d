@@ -1,10 +1,8 @@
 import std.stdio;
 import std.string;
-import std.conv;
-import std.regex;
-import std.array;
 
 import Grammar;
+import Tokenizer;
 
 int main(string[] args)
 {
@@ -14,14 +12,11 @@ int main(string[] args)
         return 1;
     }
     auto infile = File(args[1], "r");
-    auto grammar = new Grammar();
-    while(!infile.eof())
+    auto tokenizer = new Tokenizer(args[1]);
+    while(tokenizer.ct.lexeme != "EOT")
     {
-        string input = stripRight(to!(string)(infile.readln()));
-        auto split = array(splitter(input, regex(r"\s*=\s*")));
-        if(split.length == 2)
-            grammar.add_token(split[0], split[1]);
+        writef("%s\n", tokenizer.ct);
+        tokenizer.nextToken();
     }
-    stderr.writef("%s\n", grammar.token_types);
     return 0;
 }

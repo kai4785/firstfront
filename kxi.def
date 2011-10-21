@@ -16,7 +16,7 @@ x       non-terminal symbol x
 [Comment]
 Comment ::= "//" comment until the end of the line
 
-[Names, Types and Literals]
+[Names_Types_Literals]
 keyword ::= "atoi" | "bool" | "class" | "char" | "cin" | "cout" | "else" | "false" 
   | "if" | "int" | "itoa" | "main" | "new" | "null" | "object" | "public" | "private" 
   | "return" | "string" | "this" | "true" | "void" | "while" ;
@@ -49,8 +49,8 @@ printable_ascii::=
 These are the ASCII values between decimal 32 (SPACE) to 126 (~).
 
 
-nonprintable_ascii::=
-Nonprintable ASCII values are between decimal 0 (null) to 31 (unit separator) as well as 127 (DEL). They can be formed by combining a ‘\’ with a printable ASCII character ‘\n’, ‘r’,’\t’ and for example.
+//Nonprintable ASCII values are between decimal 0 (null) to 31 (unit separator) as well as 127 (DEL). They can be formed by combining a '\' with a printable ASCII character '\n', '\r', '\t' and for example.
+nonprintable_ascii::= r"[\x00-\x19\x7F]"
 
 [Start Symbol]
 compiliation_unit::=
