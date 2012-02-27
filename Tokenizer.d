@@ -41,11 +41,13 @@ class Tokenizer
         string filename;
         File infile;
         Token[] tokens;
+        bool in_comment;
         this() {}
     public:
         this(string filename) 
         {
-            grammar = new Grammar;
+            in_comment = false;
+            grammar = new Grammar();
             this.filename = filename;
             infile.open(filename);
             fill_buffer();
@@ -73,21 +75,16 @@ class Tokenizer
             while(!buffer.length && infile.readln(buffer) > 0) 
             {
                 _line_num++;
-                // Drop newline at the end of the line, its not important
+                // Drop newline at the end of the line, because we know it was there from readln
                 buffer = chomp(buffer);
-                debug(Tokenizer)
-                    stderr.writef("%-5d: %s\n", _line_num, buffer);
+                debug(tokenizer)
+                    writef("[tokenizer] new_buffer: %s\n", buffer);
                 // Strip whitespace from the beginning
-                //RegexMatch m;
                 auto m = std.regex.match(buffer, r"^(:?" ~ grammar.token_type_regexps["ws"] ~ r")*");
                 if(!m.empty)
                     buffer = m.post();
-                // Strip comments off the end
-                m = std.regex.match(buffer, r"(:?" ~ grammar.token_type_regexps["comment"] ~ r")$");
-                if(!m.empty)
-                    buffer = m.pre();
                 debug(tokenizer)
-                    stderr.writef("  fill_buffer: Result from read and strip: [%s]\n", buffer);
+                    writef("[tokenizer]  fill_buffer: Result from read and strip: [%s]\n", buffer);
             }
         }
 
@@ -105,27 +102,58 @@ class Tokenizer
                 return;
             }
             bool found = false;
-            foreach(type_order; grammar.search_type_group_priority) 
+            if(!in_comment)
             {
-                foreach(type; grammar.search_type_priority[type_order]) 
+                foreach(type_order; grammar.search_type_group_priority) 
                 {
-                    string search_value = grammar.token_type_regexps.get(type, "error");
+                    foreach(type; grammar.search_type_priority[type_order]) 
+                    {
+                        string search_value = grammar.token_type_regexps.get(type, "");
+                        if(search_value.length)
+                        {
+                            debug(tokenizer) writef("[tokenizer] Searching for a %s: %s\n", type, search_value);
+                            auto m = std.regex.match(buffer, r"^(" ~ search_value ~ r")" ~ grammar.token_type_regexps["ws"] ~ r"*");
+                            if(!m.empty)
+                            {
+                                buffer = m.post();
+                                debug(tokenizer) writef("[tokenizer] Picked out the token `%s``%s`\n[tokenizer] buffer left: %s\n", type, m.captures[1], buffer);
+                                if(type == "comment_start")
+                                    in_comment = true;
+                                tokens ~= new Token(m.captures[1], type, _line_num);
+                                found = true;
+                                break;
+                            }
+                        }
+                    }
+                    if(found)
+                        break;
+                }
+            }
+            else // in_comment
+            {
+                //We need to consume as much buffer as it takes to pull out a comment_end
+                string search_value = grammar.token_type_regexps.get("comment_end", "");
+                while(buffer.length && in_comment)
+                {
                     if(search_value.length)
                     {
-                        debug(tokenizer) stderr.writef("Searching for %s\n", search_value);
-                        auto m = std.regex.match(buffer, r"^(" ~ search_value ~ r")" ~ grammar.token_type_regexps["ws"] ~ r"*");
+                        debug(tokenizer) writef("[tokenizer] Searching for a %s: %s\n", "comment_end", search_value);
+                        // Unlike above, we want to search for comment_end anywhere in the string, not just the beginning.
+                        auto m = std.regex.match(buffer, r"(" ~ search_value ~ r")" ~ grammar.token_type_regexps["ws"] ~ r"*");
                         if(!m.empty)
                         {
-                            buffer = m.post();
-                            debug(tokenizer) stderr.writef("Picked out the token `%s``%s`\nbuffer: %s", type, m.captures[1], buffer);
-                            tokens ~= new Token(m.captures[1], type, _line_num);
-                            found = true;
-                            break;
+                            buffer = m.post;
+                            debug(tokenizer) writef("[tokenizer] Picked out the token `%s``%s`\n[tokenizer] buffer left: %s\n", type, m.captures[1], buffer);
+                            tokens ~= new Token(m.captures[1], "comment_end", _line_num);
+                            in_comment = false;
+                        }
+                        else
+                        {
+                            buffer.clear();
+                            fill_buffer();
                         }
                     }
                 }
-                if(found)
-                    break;
             }
         }
 
@@ -158,7 +186,7 @@ class Tokenizer
         /*
         void add_current_class()
         {
-            //stderr.writef("Adding class: %s\n", tokens[0].lexeme);
+            //writef("Adding class: %s\n", tokens[0].lexeme);
             grammar.add_class(tokens[0].lexeme);
         }
 
@@ -175,3 +203,6 @@ class Tokenizer
 }
 
 
+/*
+# vim: set syntax=d :
+*/

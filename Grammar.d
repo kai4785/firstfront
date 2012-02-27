@@ -3,6 +3,7 @@
  * This special Grammar class is used to tokenize Grammar definition files
  */
 import std.conv;
+import std.string;
 class Grammar
 {
     private:
@@ -15,14 +16,19 @@ class Grammar
         string[][string] search_type_priority;
         this()
         {
-            init();
+            init_default();
         }
-        void init()
+	    this(bool init)
+	    {
+		    if(init)
+			    init_default();
+	    }
+        void init_default()
         {
             token_type_regexps = [
                 "ws":r"\s",
                 "not_ws":r"\S",
-                "comment":r"//", // Comment to the end of the line
+                "comment":r"//.*", // Comment to the end of the line
                 "comment_start":r"/\*",
                 "comment_end":r"\*/",
                 "name":r"[a-z]+",
@@ -53,4 +59,15 @@ class Grammar
                 "not_ws",
                 ];
         }
+        string toString()
+        {
+            return format("token_type_regexps %s\nsearch_type_group_priority %s\nsearch_type_priority %s\n",
+                token_type_regexps,
+                search_type_group_priority,
+                search_type_priority);
+        }
 }
+
+/*
+# vim: set syntax=d :
+*/

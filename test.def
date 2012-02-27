@@ -1,0 +1,6 @@
+[Comments]
+comment ::= "//.*" // comment until the end of the line
+comment_start ::= "/*" /* start of a 
+                       multi-line comment */
+comment_end ::= "*/" /* end of a
+                       multi-line comment */
