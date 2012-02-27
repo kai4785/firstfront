@@ -31,7 +31,7 @@ class Grammar
                 "comment":r"//.*", // Comment to the end of the line
                 "comment_start":r"/\*",
                 "comment_end":r"\*/",
-                "name":r"[a-z]+",
+                "name":r"[a-z_]+",
                 "value":`"[^"\\]*(?:\\.[^"\\]*)*"`,
                 "or":r"\|",
                 "eor":";",
@@ -41,9 +41,9 @@ class Grammar
                 "header_name":r"[A-Za-z\-_]+"
                 ];
             search_type_group_priority = [
-                "all",
+                "default",
                 ];
-            search_type_priority["all"] = [
+            search_type_priority["default"] = [
                 "name",
                 "defined_as",
                 "value",

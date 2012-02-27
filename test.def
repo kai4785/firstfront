@@ -4,3 +4,8 @@ comment_start ::= "/*" /* start of a
                        multi-line comment */
 comment_end ::= "*/" /* end of a
                        multi-line comment */
+[Names_Types_Literals]
+keyword ::= "atoi" | "bool" | "class" | "char" | "cin" | "cout" | "else" | "false" 
+  | "if" | "int" | "itoa" | "main" | "new" | "null" | "object" | "public" | "private" 
+  | "return" | "string" | "this" | "true" | "void" | "while" ;
+modifier::= "public" | "private" ;

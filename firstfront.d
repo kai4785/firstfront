@@ -1,5 +1,6 @@
 import std.stdio;
 import std.string;
+import std.array;
 
 import Grammar;
 import Tokenizer;
@@ -20,11 +21,28 @@ int main(string[] args)
 Grammar generate_grammar(Tokenizer tokenizer)
 {
     Grammar new_grammar = new Grammar(false);
+    string last_group = "default";
+    new_grammar.search_type_priority[last_group] = [];
+    string last_type;
     while(tokenizer.ct.lexeme != "EOT")
     {
         writef("%s\n", tokenizer.ct);
+        if(tokenizer.ct.type == "name")
+        {
+            last_type = tokenizer.ct.lexeme;
+            new_grammar.search_type_priority[last_group] ~= tokenizer.ct.lexeme;
+        }
+        if(tokenizer.ct.type == "value")
+        {
+            new_grammar.token_type_regexps[last_type] ~= tokenizer.ct.lexeme;
+        }
+        if(tokenizer.ct.type == "or")
+        {
+            new_grammar.token_type_regexps[last_type] ~= "|";
+        }
         tokenizer.nextToken();
     }
+    new_grammar.search_type_group_priority = [last_group];
     return new_grammar;
 }
 
