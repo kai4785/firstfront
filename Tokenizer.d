@@ -143,7 +143,7 @@ class Tokenizer
                         if(!m.empty)
                         {
                             buffer = m.post;
-                            debug(tokenizer) writef("[tokenizer] Picked out the token `%s``%s`\n[tokenizer] buffer left: %s\n", type, m.captures[1], buffer);
+                            debug(tokenizer) writef("[tokenizer] Picked out the token `%s``%s`\n[tokenizer] buffer left: %s\n", "", m.captures[1], buffer);
                             tokens ~= new Token(m.captures[1], "comment_end", _line_num);
                             in_comment = false;
                         }
@@ -181,6 +181,11 @@ class Tokenizer
             if(!tokens.length) 
             {
                 read_token();
+            }
+            if(ct.type == "comment" || ct.type == "comment_start" || ct.type == "comment_end")
+            {
+                //writef("%s\n", ct);
+                nextToken();
             }
         }
         /*

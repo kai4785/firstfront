@@ -1,26 +1,26 @@
-[Meta-Language]
+// [Meta-Language]
 // White space is in just a delimiter
-::=     is defined as
-|       alternative definition (regexp | )
-[ ]     optional (regexp ?)
-{ }     zero or more occurrences (regexp *)
-( )     grouping (regexp ))
-x       non-terminal symbol x
-"x"     terminal symbol x
-"\""    terminal symbol "
-;       end of rule
-/*      start of comment
- */     end of comment
+// ::=     is defined as
+// |       alternative definition (regexp | )
+// [ ]     optional (regexp ?)
+// { }     zero or more occurrences (regexp *)
+// ( )     grouping (regexp ))
+// x       non-terminal symbol x
+// "x"     terminal symbol x
+// "\""    terminal symbol "
+// ;       end of rule
+// /*      start of comment
+//  */     end of comment
 
 
 [Comment]
-comment ::= "//"; // Comment to the end of the line
+comment ::= "//.*"; // Comment to the end of the line
 
 [Token Name]
 name ::= "^[a-z]+ ";
 
 [Token Values]
-value ::= "[^"\\]*(?:\\.[^"\\]*)*
+value ::= "[^\"\\]*(?:\\.[^\"\\]*)*";
 
 [End of Rule]
-eor ::= ;
+eor ::= ";" ;

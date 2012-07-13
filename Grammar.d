@@ -4,6 +4,7 @@
  */
 import std.conv;
 import std.string;
+import std.array;
 class Grammar
 {
     private:
@@ -38,7 +39,7 @@ class Grammar
                 "defined_as":"::=",
                 "open_bracket":r"\[",
                 "close_bracket":r"\]",
-                "header_name":r"[A-Za-z\-_]+"
+                "header_name":r"[A-Za-z\-_ ]+"
                 ];
             search_type_group_priority = [
                 "default",
@@ -61,10 +62,18 @@ class Grammar
         }
         string toString()
         {
-            return format("token_type_regexps %s\nsearch_type_group_priority %s\nsearch_type_priority %s\n",
-                token_type_regexps,
-                search_type_group_priority,
-                search_type_priority);
+            auto retval = appender!string();
+            retval.put("token_type_regexps:\n");
+            foreach(k, v; token_type_regexps)
+                retval.put(format("    %s:%s\n", k, v));
+            retval.put("search_type_group_priority:\n");
+            foreach(k, v; search_type_group_priority)
+                retval.put(format("    %s:%s\n", k, v));
+            retval.put("search_type_priority:\n");
+            foreach(k, v; search_type_priority)
+                retval.put(format("    %s:%s\n", k, v));
+            retval.put("Done with Grammar\n");
+            return retval.data;
         }
 }
 
