@@ -1,4 +1,4 @@
-kgrlex
+firstfront
 
 The capstone course for the CS-CS degree at UVU required a course where we implemented a made-up instruction set in a VM, and write an assembler to convert a made-up ASCII assembly language to the byte-code instructions for the VM. The capstone course was a Compiler for a made-up language that targeted the same instruction set for that same VM.
 
@@ -7,3 +7,42 @@ When I first recieved the grammar for the language, I thought it just looked lik
 By the end, I was convinced that I could write a program that could generate my static associative array from a grammar definition in some easy to consume format, like an INI file. I was also convinced that I could at least stub-out the functions for the lexer and do the first pass completely, leaving hooks for the second pass to be implemented by hand, all from the grammar.
 
 So that's what I've set out to do. We'll see how it goes.
+
+As I was taught, there are 5 distinct phases of a compiler. Some steps are pipelined together, but they are still distinct.
+
+1) Lexer (text parsing)
+2) Syntax (make sure all symbols show up in a correct order)
+3) Semantics (what does the code need to accomplish)
+4) Intermediate Code (some infinitely more simple code format that is usually easy to translate to machine code)
+5) Target Code (directly consumable machine code)
+
+For the first of our two pass compiler and language, the Syntax code would use the Lexer to "tokenize" the source code. The syntax was expressed in the code path (branches and function calls). Each token has a finite number of tokens that can follow, and depending on which token follows, a decision (branch) is made on where to go next. This is what I mean by piplined together. In addition to this, there are some tokens that have ephemeral definitions, and are actually defined by the code itself. For instance, types like 'int', 'double', and 'float' are all built-in types that are defined as part of the language. When you introduce C style structs and C++ style classes, the names of the classes can be used in the same place in the syntax that a type is. Therefore, my pass 1 syntax parser had to treat just about any token (I called an identifier) as a type. Then, as classes are defined, the name of the class is added to the list of possible types that pass two is able to check for correctness. This allowed us to eliminate the need for the C style declaration when classes have interelationships, or when a class has a member of its own type. Like so:
+
+class A
+{
+    A a;
+    B b;
+}
+class B
+{
+    A a;
+    B b;
+}
+
+In the second pass, the lexer is again used to help follow (hopefully) the exact same code path. This time, classes were defined, and can be checked for spelling correctness. As we reach certain combinations of tokens that have meaning (semantics), we generate intermediate code that express the same meaning (translation.)
+
+At this point, we have completed 4 of the 5 phases of the compiler. The last phase is pretty much straight forward, with the option to add optimisations if desired (like gcc's -O# flag). 
+
+I think that it's possible to "compile" a grammar definition into source code that in turn is compiled into another compiler. :) This brand-new compiler would have 100% of it's tokenizer and syntax phases implemented, and optionally able to report interesting things about the language that has been defined. 
+
+The flow of data looks like this in my mind:
+1) firstfront source code -> dmd compiler -> firstfront compiler (ffc)
+2) ffc + grammar definition -> partial new language compiler (pnlc) source code
+3) pnlc source code + semantics source code + intermediate source code + target source code -> some pre-existing compiler -> new language compiler (nlc)
+4) nlc + source code in nlc -> new program
+
+I think it's entirely possible for plnc to be output in any language there is an 'output' module for. It could easily be an interpreted language like python. The sourcecode would likely call into an interface that is defined, but unimplemented for the semantic and intermediate phases, to be implemented by the user. These implementations could be shared between projects. For instance, mathematical operators would be a great candidate to share between different languages. If the interface is to an external library, it makes the project that much more flexible, allowing the plnc source code to be something like python, and the semantic code to be implemented in a c++ shared library. The same goes for target code generation. If we chose to target the intermediate code that gcc uses, we could leverage gcc's optimisation and portability features at that level.
+
+Now, with your freshly compiled nlc, you can begin writing code in your new language, targeted at what ever it is your heart desires.
+
+Some of the flexibility of this process allows us to generate not only new compilers, but things like a report generator for a log file. In the example above, the nlc program wouldn't be a compiler, but instead a report generator, in that it compiles log files into reports.

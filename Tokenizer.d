@@ -51,7 +51,7 @@ class Tokenizer
             this.filename = filename;
             infile.open(filename);
             fill_buffer();
-            read_token();
+            nextToken();
         }
 
         @property uint line_num() { return _line_num; }
@@ -65,7 +65,7 @@ class Tokenizer
             tokens.clear();
 
             infile.open(filename);
-            read_token();
+            nextToken();
         }
 
         void fill_buffer() 
