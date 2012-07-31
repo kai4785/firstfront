@@ -83,6 +83,15 @@ public:
             gen_error(func);
         }
     }
+
+    void definition()
+    {
+        define();
+        while(check_symbol == "or")
+        {
+            define();
+        }
+    }
     
     void name()
     {
@@ -102,27 +111,6 @@ public:
         writef("%s\n", tokenizer.ct);
         while(!check_token("eor"))
         {
-            if(check_token("value"))
-            {
-                new_grammar.token_type_regexps[last_type] ~= tokenizer.ct.lexeme;
-            }
-            else if(check_token("name"))
-            {
-                new_grammar.token_type_regexps[last_type] ~= tokenizer.ct.lexeme;
-            }
-            else
-            {
-                gen_error(func, format("Expected value or name, but got %s", tokenizer.ct));
-            }
-            tokenizer.nextToken();
-            writef("%s\n", tokenizer.ct);
-            if(check_token("or"))
-            {
-                new_grammar.token_type_regexps[last_type] ~= "|";
-                tokenizer.nextToken();
-                writef("%s\n", tokenizer.ct);
-            }
-            else if(!check_token("eor"))
             {
                 gen_error(func, format("Expected | or eor, but got %s", tokenizer.ct));
                 return;

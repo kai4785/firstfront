@@ -2,7 +2,7 @@
 // White space is in just a delimiter
 // ::=     is defined as
 // |       alternative definition (regexp | )
-// [ ]     optional (regexp ?)
+// [ ]     optional, zero or one occurence (regexp ?)
 // { }     zero or more occurrences (regexp *)
 // ( )     grouping (regexp ))
 // x       non-terminal symbol x
@@ -16,11 +16,18 @@
 [Comment]
 comment ::= "//.*"; // Comment to the end of the line
 
-[Token Name]
+[Tokens]
 name ::= "^[a-z]+ ";
-
-[Token Values]
+defined_as ::= "::=";
 value ::= "[^\"\\]*(?:\\.[^\"\\]*)*";
-
-[End of Rule]
 eor ::= ";" ;
+or ::= "|";
+
+[Rule]
+arg ::= (value | name);
+optional_arg ::= "[" arg "]";
+wildcard_arg ::= "{" arg "}";
+grouped_args ::= "(" arg ")";
+argument ::= arg | optional_arg | wildcard_arg | grouped_args { argument };
+definition ::= argument {or argument};
+rule ::= name defined_as definition eor;
